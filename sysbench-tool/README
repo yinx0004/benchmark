@@ -1,0 +1,9 @@
+# Prerequisite
+Require sysbench installed
+
+# Functions
+- This script help to format the sysbench cumulative result into csv format
+- Run 3 times by default
+
+# Compatability
+Tested with sysbench 1.0.20
