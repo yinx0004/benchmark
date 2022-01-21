@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
-#set -x
+set -x
 
-ROUND=3
+##########  You can config here   #####
+threads=(1 4 8 16 32 64 128 256 512 1024)          # --threads option will be overwritten here
+round=3                                            # the number of rounds for each thread
+sleep=60                                           # seconds of sleep between each round
+##########  You can config end  #####
+
 NAME=${0##*/}
 CMD=$@
 DIR=$(pwd)
@@ -65,8 +70,11 @@ else if (match($0,/(execution time \(avg\/stddev\):)/)) print $1":"$2;
 
 run(){
 # to output the cumulative result to csv result file
+  thread=$1
   log "run ..."
-  $CMD | awk '{ sub(/^[ \t]+/, ""); gsub(/[ ]+/," "); print }' |awk -F ":" '{ \
+  run_cmd="${CMD} --threads=${thread}"
+  log $run_cmd
+  $run_cmd | awk '{ sub(/^[ \t]+/, ""); gsub(/[ ]+/," "); print }' |awk -F ":" '{ \
 if (match($0,/(^Number of threads)/)) print $1":"$2;
 else if (match($0,/(read:)/)) print $1":"$2;
 else if (match($0,/(write:)/)) print $1":"$2;
@@ -105,16 +113,25 @@ exec(){
   msg="sysbench started..."
   log $msg
   lock
+  log "Input: ${CMD}"
+  log "Please be noted the --threads option will be overwritten by the threads array in the script!"
   touch $RESULT
   echo $CMD >> $RESULT
-  log $CMD
 
   dry_run
 
-  for i in $(seq 1 $ROUND)
+  for t in "${threads[@]}"
   do
-    log "Round $i"
-    run
+    for i in $(seq 1 $round)
+    do
+      log "Thread=$t Round $i"
+      run $t
+      if [ $sleep -ne 0 ]
+      then
+	log "sleep ${sleep} seconds ..."
+        sleep $sleep
+      fi
+    done
   done
 
   unlock
