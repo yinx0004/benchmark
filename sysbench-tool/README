@@ -3,7 +3,9 @@ Require sysbench installed
 
 # Functions
 - This script help to format the sysbench cumulative result into csv format
-- Run 3 times by default
+- Run with a group of threads
+- Run 3 times for each --threads option by default
+- Sleep 60s for each round
 
 # Compatability
 Tested with sysbench 1.0.20
