@@ -2,6 +2,10 @@
 Require sysbench installed
 
 # Functions
+1. warm_up.sh
+load data into bufferpool before run sysbench
+
+2. run_sysbench.sh
 - This script help to format the sysbench cumulative result into csv format
 - Run with a group of threads
 - Run 3 times for each --threads option by default
@@ -11,6 +15,19 @@ Require sysbench installed
 Tested with sysbench 1.0.20
 
 # Usage
+0. warm up
+```
+./warm_up.sh -uroot -pxxx -h 10.10.36.92 -P 6606 -D sysbench -n 60
+
+Usage: ./warm_up.sh [options]
+-u : user name
+-p : password
+-h : MySQL server host
+-P : MySQL server port
+-D : database name
+-n : number of tables to warm up
+```
+
 1. Config first
 ```
 threads=(1 4 8 16 32 64 128 256 512 1024)          # --threads option will be overwritten here if you pass as parameter
